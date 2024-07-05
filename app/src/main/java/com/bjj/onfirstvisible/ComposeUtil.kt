@@ -23,3 +23,19 @@ fun Modifier.onFirstVisible(action: () -> Unit): Modifier = composed {
         }
     }
 }
+
+@Stable
+fun Modifier.onVisibleChanged(action: (visible: Boolean) -> Unit): Modifier = composed {
+    var flag by remember {
+        mutableStateOf(false)
+    }
+    onGloballyPositioned {
+        if (flag.not() && it.boundsInWindow() != Rect.Zero) {
+            flag = true
+            action(true)
+        } else if (flag && it.boundsInWindow() == Rect.Zero) {
+            flag = false
+            action(false)
+        }
+    }
+}
